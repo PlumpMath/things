@@ -1,0 +1,33 @@
+(ns things.core
+  (:require
+   [reagent.core :as r]
+   [thi.ng.geom.core :as g]
+   [thi.ng.math.core :as m]
+   [thi.ng.geom.core.vector :as v :refer [vec2 vec3]]
+   [thi.ng.geom.circle :as c]
+   [thi.ng.geom.svg.core :as svg]
+   [thi.ng.geom.svg.adapter :as svgadapt]))
+
+(enable-console-print!)
+
+(defn svg-component [width body]
+  [:div
+   [(->> body
+         (svgadapt/inject-element-attribs svgadapt/key-attrib-injector)
+         (svg/svg {:width width :height width}))]])
+
+(defn simple-circles
+  [width num r1 r2]
+  (->> (for [i (butlast (m/norm-range num))
+             :let [pos (-> (vec2 r1 (* m/TWO_PI i))
+                           (g/as-cartesian)
+                           (g/madd [1 0.5] (/ width 2)))]]
+         (c/circle pos r2))
+       ((svg-component width (svg/group {:stroke "blue" :fill "none"})))))
+
+(defn simple []
+  (svg-component 300 (svg/group {:stroke "blue" :fill "none"} (c/circle 20))))
+
+(defn ^:export on-js-reload []
+  (r/render [simple]
+            (js/document.getElementById "app")))
