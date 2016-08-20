@@ -173,3 +173,5 @@
 (defn ^:export on-js-reload []
   (r/render [main]
             (js/document.getElementById "app")))
+
+(on-js-reload)
